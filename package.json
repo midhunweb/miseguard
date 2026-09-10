@@ -1,0 +1,51 @@
+{
+  "name": "miseguard",
+  "version": "0.1.0",
+  "description": "Deterministic runtime circuit breaker and stdio MCP proxy for autonomous AI coding agents",
+  "main": "dist/src/index.js",
+  "types": "dist/src/index.d.ts",
+  "bin": {
+    "miseguard": "dist/bin/miseguard.js"
+  },
+  "type": "module",
+  "scripts": {
+    "build": "tsc",
+    "start": "node dist/bin/miseguard.js",
+    "dev": "tsx bin/miseguard.ts",
+    "test": "tsx --test tests/*.test.ts tests/**/*.test.ts",
+    "benchmark": "tsx scripts/benchmark.ts",
+    "prepare": "npm run build"
+  },
+  "keywords": [
+    "mcp",
+    "model-context-protocol",
+    "security",
+    "ai-agents",
+    "sandbox",
+    "circuit-breaker",
+    "blast-radius",
+    "devsecops"
+  ],
+  "author": "Midhun Sekhar",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/midhunweb/miseguard.git"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.6.1",
+    "chalk": "^5.4.1",
+    "cli-table3": "^0.6.5",
+    "commander": "^13.1.0",
+    "picomatch": "^4.0.2"
+  },
+  "devDependencies": {
+    "@types/node": "^22.13.9",
+    "@types/picomatch": "^3.0.2",
+    "tsx": "^4.19.3",
+    "typescript": "^5.8.2"
+  }
+}

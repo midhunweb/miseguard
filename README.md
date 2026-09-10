@@ -1,0 +1,229 @@
+> **Disclaimer**
+>
+> MiSeGuard is an independent personal project created by Midhun Sekhar.
+> It is not affiliated with, endorsed by, or representative of any current, past, or future employer.
+> All development was conducted entirely on personal equipment, during personal time, and without the use of proprietary resources or confidential information.
+
+
+# 🛡️ MiSeGuard
+
+**Deterministic Runtime Circuit Breaker and Stdio Proxy for Autonomous AI Coding Agents.**
+
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5.8+-blue.svg)](https://www.typescriptlang.org/)
+[![Node.js](https://img.shields.io/badge/Node.js-%3E%3D18-green.svg)](https://nodejs.org/)
+[![MCP Ready](https://img.shields.io/badge/Model%20Context%20Protocol-Compatible-emerald.svg)](https://modelcontextprotocol.io)
+[![Latency](https://img.shields.io/badge/Proxy%20Overhead-%3C1ms-brightgreen.svg)](#-performance--latency)
+
+---
+
+> **What is MCP?**
+> The Model Context Protocol (MCP) is an open standard that lets autonomous AI agents (such as **Cursor, Claude Code, Antigravity, OpenCode, Windsurf**) invoke external tools (bash, filesystem, git, terminal) over stdio JSON-RPC 2.0. **MiSeGuard** sits as a transparent, sub-millisecond proxy between your agent and those tool runtimes to inspect, score, and block destructive operations before they reach the real operating system.
+
+> **What Does "Deterministic" Mean?**
+> The same command or file mutation with the same configuration always produces the exact identical risk score. **No LLM in the loop, no non-deterministic inference, no prompt drift.**
+
+---
+
+## 📦 Installation
+
+```bash
+# Global install (recommended for CLI use)
+npm install -g miseguard
+
+# Or run directly via npx
+npx miseguard --help
+
+# Or add as a project dev dependency
+npm install --save-dev miseguard
+```
+
+**Requirements:** Node.js 18.0 or later.
+
+---
+
+## 🚀 30-Second Quick Start
+
+```bash
+# 1. Initialize workspace security policy (miseguard.json)
+miseguard init
+
+# 2. Automatically wrap and shield your existing MCP config (auto-detects mcp.json, .cursor/mcp.json)
+miseguard wrap-config
+
+# 3. Test the deterministic circuit breaker
+miseguard check "rm -rf /"     # 🛑 Exit Code 1: Blocked
+miseguard check "git status"    # 🟢 Exit Code 0: Safe
+```
+
+---
+
+## 🚦 Deterministic Risk Tiers & Exit Code Contract
+
+MiSeGuard computes a multi-factor **Blast-Radius Risk Score (0–100)** for every tool invocation.
+
+| Level | Score | `strict` Mode | `permissive` Mode | Action | Trigger Examples |
+|---|---|---|---|---|---|
+| 🟢 **GREEN** | `0 - 29` | **Exit `0`** | **Exit `0`** | **ALLOW** | `git status`, `ls -la`, `npm test`, `tsc --noEmit`, safe file edits |
+| 🟡 **YELLOW** | `30 - 69` | **Exit `2`** | **Exit `0`** (Warning) | **DRY-RUN** | `npm install -g`, `chmod -R`, `kill`, `npm publish`, `package.json` updates |
+| 🔴 **RED** | `70 - 100` | **Exit `1`** | **Exit `1`** | **BLOCK** | `rm -rf /`, `git reset --hard`, `cat .env`, `curl ... \| bash`, `nc -e /bin/sh`, `delete_file .env` |
+
+> 📌 **CLI Exit Code Stability Contract:**
+> - `0`: Safe operation (Green) or permitted in permissive mode.
+> - `1`: Dangerous operation blocked by circuit breaker (Red).
+> - `2`: Caution operation triggering dry-run in strict mode (Yellow).
+> - `3`: Internal parsing or configuration error.
+> 
+> *Exit codes are stable and guaranteed across versions for CI/CD and pre-commit hook integration.*
+
+---
+
+## ⚙️ Configuration (`miseguard.json`)
+
+Generate a starter configuration file in your project:
+
+```bash
+miseguard init
+```
+
+### Configuration Options
+
+```json
+{
+  "$schema": "https://raw.githubusercontent.com/midhunweb/miseguard/main/schema.json",
+  "mode": "strict",
+  "thresholds": {
+    "block": 70,
+    "dryRun": 30
+  },
+  "allowlist": [
+    "echo *",
+    "git log*",
+    "git status*",
+    "git diff*",
+    "npm run test*",
+    "npm run lint*",
+    "npm run clean:*"
+  ],
+  "protectedPaths": [
+    ".env*",
+    "*.pem",
+    "*.key",
+    "id_rsa*",
+    "id_ed25519*",
+    "~/.ssh/*",
+    "~/.aws/*",
+    "~/.kube/*",
+    ".git/*",
+    "secrets/**"
+  ]
+}
+```
+
+- **`mode`**:
+  - `"strict"` (default): Yellow tier actions trigger ephemeral sandbox dry-run simulation; Red tier actions are blocked.
+  - `"permissive"`: Yellow tier actions log warnings and allow execution; Red tier actions are still blocked.
+- **`allowlist`**: Commands or file targets matching these patterns are unconditionally granted **Green (Score 0)** status.
+- **`protectedPaths`**: Glob patterns of sensitive files that immediately elevate risk to **Red (Score >= 70)** upon access or mutation attempt.
+- **`thresholds`**: Customize risk boundaries for `block` and `dryRun`.
+
+---
+
+## 🛠️ CLI Reference
+
+### 1. `miseguard wrap-config [file-path]`
+Auto-discovers and safely transforms tools in existing MCP configuration files (`mcp.json`, `.cursor/mcp.json`, `.antigravity/mcp.json`) behind `miseguard proxy --`:
+```bash
+miseguard wrap-config
+```
+*Creates `<file-path>.bak` before modification and guarantees idempotency.*
+
+### 2. `miseguard snippet [options]`
+Generates copy-pasteable JSON configuration blocks for agent GUI settings:
+```bash
+# Filesystem preset (default)
+miseguard snippet --tool filesystem --path ./
+
+# Git preset
+miseguard snippet --tool git --path ./
+
+# Bash/Terminal preset
+miseguard snippet --tool bash
+
+# Custom tool preset
+miseguard snippet --tool custom --name my-server --cmd python --args -m my_module
+```
+
+### 3. `miseguard check "<command>"`
+Evaluates the blast-radius risk score of any shell command:
+```bash
+miseguard check "rm -rf /"
+```
+
+### 4. `miseguard dry-run "<command>"`
+Simulates a command inside an isolated ephemeral shadow sandbox and outputs a SHA-256 filesystem delta table:
+```bash
+miseguard dry-run "npm run build"
+```
+
+### 5. `miseguard proxy -- <command...>`
+Runs MiSeGuard as an active stdio proxy in front of an MCP server process:
+```bash
+miseguard proxy -- npx -y @modelcontextprotocol/server-filesystem ./
+```
+
+### 6. `miseguard rules`
+Displays the complete deterministic security rule matrix.
+
+---
+
+## ⚡ Performance & Latency
+
+MiSeGuard adds negligible overhead to your agent workflows.
+
+| Scenario | Median Latency | Mean Latency | 95th Percentile (p95) |
+|---|---|---|---|
+| 🟢 **Green Pass-Through (`git status`)** | **~0.006 ms** | ~0.007 ms | 0.010 ms |
+| 🔴 **Red Filesystem Block (`delete_file .env`)** | **~0.004 ms** | ~0.005 ms | 0.009 ms |
+| 🔴 **Red Command Block (`rm -rf /`)** | **~0.066 ms** | ~0.083 ms | 0.118 ms |
+| 🟡 **Yellow Caution Scoring (`npm -g`)** | **~0.194 ms** | ~0.280 ms | 0.325 ms |
+
+> 📊 **Summary:** Median overhead is **~0.006 ms (6 microseconds)** for safe operations; worst-case mean is **~0.28 ms** for caution scoring.
+>
+> 📖 [Detailed benchmark methodology & distribution →](./docs/BENCHMARKS.md)
+
+---
+
+## 🚫 What MiSeGuard Does Not Do
+
+Being explicit about architectural boundaries:
+- **Does not protect against prompt injection**: That is an LLM inference layer concern. MiSeGuard acts as the deterministic runtime circuit breaker on the *actions* and *tool invocations*.
+- **Does not maintain long-running persistent VM state**: Shadow sandboxes for dry-runs are ephemeral and discarded after diff analysis.
+- **Does not support HTTP/gRPC transports yet**: Standard input/output (`stdio`) JSON-RPC 2.0 only for v0.1.0 (HTTP on roadmap).
+- **Does not use ML or probabilistic heuristics for risk scoring**: By design. Determinism and reproducibility are core security features.
+
+---
+
+## 📖 Extended Documentation
+
+- [Architecture & Design Specification →](./docs/ARCHITECTURE.md)
+- [Latency Benchmark Details →](./docs/BENCHMARKS.md)
+- [Agent Frontend Integration Guide (Cursor, Claude Desktop, Antigravity) →](./docs/INTEGRATION.md)
+
+---
+
+## 🧪 Testing
+
+```bash
+# Run all 55 unit and integration tests
+npm test
+
+# Run latency benchmark suite
+npm run benchmark
+```
+
+---
+
+## 📜 License
+
+MIT License. Copyright (c) 2026 Midhun Sekhar & MiSeGuard Contributors.

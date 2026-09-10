@@ -1,0 +1,27 @@
+{
+  "$schema": "https://raw.githubusercontent.com/midhunweb/miseguard/main/schema.json",
+  "mode": "strict",
+  "thresholds": {
+    "block": 70,
+    "dryRun": 30
+  },
+  "allowlist": [
+    "echo *",
+    "git log*",
+    "git status*",
+    "git diff*",
+    "npm run test*",
+    "npm run lint*"
+  ],
+  "protectedPaths": [
+    ".env*",
+    "*.pem",
+    "*.key",
+    "id_rsa*",
+    "id_ed25519*",
+    "~/.ssh/*",
+    "~/.aws/*",
+    "~/.kube/*",
+    ".git/*"
+  ]
+}

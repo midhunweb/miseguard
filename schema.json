@@ -1,0 +1,74 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://raw.githubusercontent.com/midhunweb/miseguard/main/schema.json",
+  "title": "MiSeGuard Configuration",
+  "description": "Configuration schema for MiSeGuard deterministic agent circuit breaker and MCP proxy",
+  "type": "object",
+  "properties": {
+    "$schema": {
+      "type": "string",
+      "description": "URL to the MiSeGuard JSON Schema for validation and IntelliSense"
+    },
+    "mode": {
+      "type": "string",
+      "enum": ["strict", "permissive"],
+      "default": "strict",
+      "description": "Execution policy mode. In strict mode, Yellow caution actions trigger ephemeral dry-run or block. In permissive mode, Yellow actions pass through with warnings."
+    },
+    "thresholds": {
+      "type": "object",
+      "description": "Customizable risk score boundaries for triggering circuit breakers or sandbox simulations.",
+      "properties": {
+        "block": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 100,
+          "default": 70,
+          "description": "Risk score (0-100) threshold at or above which the circuit breaker trips and blocks execution (Red tier)."
+        },
+        "dryRun": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 100,
+          "default": 30,
+          "description": "Risk score (0-100) threshold at or above which caution inspection / ephemeral sandbox dry-run is triggered (Yellow tier)."
+        }
+      },
+      "additionalProperties": false
+    },
+    "allowlist": {
+      "type": "array",
+      "description": "Glob patterns or commands that are unconditionally permitted (Green tier, Score 0).",
+      "items": {
+        "type": "string"
+      },
+      "default": [
+        "echo *",
+        "git log*",
+        "git status*",
+        "git diff*",
+        "npm run test*",
+        "npm run lint*"
+      ]
+    },
+    "protectedPaths": {
+      "type": "array",
+      "description": "Glob patterns of sensitive files or paths that will elevate risk score directly to Red (>= 70) upon access or mutation attempt.",
+      "items": {
+        "type": "string"
+      },
+      "default": [
+        ".env*",
+        "*.pem",
+        "*.key",
+        "id_rsa*",
+        "id_ed25519*",
+        "~/.ssh/*",
+        "~/.aws/*",
+        "~/.kube/*",
+        ".git/*"
+      ]
+    }
+  },
+  "additionalProperties": false
+}

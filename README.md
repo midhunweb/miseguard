@@ -15,6 +15,8 @@
 [![MCP Ready](https://img.shields.io/badge/Model%20Context%20Protocol-Compatible-emerald.svg)](https://modelcontextprotocol.io)
 [![Latency](https://img.shields.io/badge/Proxy%20Overhead-%3C1ms-brightgreen.svg)](#-performance--latency)
 
+![MiSeGuard Demo](./docs/assets/demo.gif)
+
 ---
 
 > **What is MCP?**

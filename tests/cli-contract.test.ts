@@ -28,7 +28,7 @@ describe('MiSeGuard CLI Exit Code & Interface Contract', () => {
   it('should return Exit Code 0 for version queries (-v and --version)', () => {
     const res = runCli(['--version']);
     assert.strictEqual(res.exitCode, 0);
-    assert.ok(res.stdout.includes('0.1.0'));
+    assert.ok(/^\d+\.\d+\.\d+/.test(res.stdout.trim()));
   });
 
   it('should return Exit Code 0 for Green safe commands', () => {

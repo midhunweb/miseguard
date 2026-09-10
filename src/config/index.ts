@@ -16,6 +16,7 @@ import {
 export * from './schema.js';
 export * from './wrapper.js';
 export * from './snippet.js';
+export * from './version.js';
 
 const CONFIG_CANDIDATES = [
   'miseguard.json',

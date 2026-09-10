@@ -7,6 +7,7 @@ import chalk from 'chalk';
 import Table from 'cli-table3';
 import type { EvaluationResult } from '../engine/blast-radius.js';
 import type { DiffReport } from '../sandbox/diff-analyzer.js';
+import { VERSION } from '../config/version.js';
 
 export class Reporter {
   private static renderGauge(score: number): string {
@@ -23,10 +24,11 @@ export class Reporter {
   }
 
   public static printHeader(): void {
+    const versionStr = `v${VERSION}`.padEnd(6, ' ');
     console.error(
       chalk.cyanBright.bold(`
  ╔══════════════════════════════════════════════════════════════╗
- ║                     🛡️  MiSeGuard v0.1.0                     ║
+ ║                     🛡️  MiSeGuard ${versionStr}                     ║
  ║        Deterministic AI Agent Circuit Breaker & Proxy        ║
  ╚══════════════════════════════════════════════════════════════╝
 `)

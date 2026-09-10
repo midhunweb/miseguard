@@ -13,14 +13,14 @@ import { evaluateShellCommand } from '../src/engine/blast-radius.js';
 import { SECURITY_RULES } from '../src/engine/rules.js';
 import { Reporter } from '../src/ui/reporter.js';
 import { executeDryRun } from '../src/sandbox/dry-run.js';
-import { loadConfigSync, wrapMcpConfigFile, generateSnippet, type ToolPreset } from '../src/config/index.js';
+import { loadConfigSync, wrapMcpConfigFile, generateSnippet, type ToolPreset, VERSION } from '../src/config/index.js';
 
 const program = new Command();
 
 program
   .name('miseguard')
   .description('🛡️ Deterministic runtime circuit breaker and stdio MCP proxy for autonomous AI coding agents')
-  .version('0.1.0', '-v, --version', 'Output the current version of MiSeGuard')
+  .version(VERSION, '-v, --version', 'Output the current version of MiSeGuard')
   .option('-c, --config <path>', 'Path to custom miseguard.json configuration file');
 
 // Command: init

@@ -1,6 +1,6 @@
 {
   "name": "miseguard",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Deterministic runtime circuit breaker and stdio MCP proxy for autonomous AI coding agents",
   "main": "dist/src/index.js",
   "types": "dist/src/index.d.ts",
@@ -53,5 +53,4 @@
     "tsx": "^4.19.3",
     "typescript": "^5.8.2"
   }
-  
 }

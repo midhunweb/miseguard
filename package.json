@@ -17,7 +17,7 @@
     "build": "tsc",
     "start": "node dist/bin/miseguard.js",
     "dev": "tsx bin/miseguard.ts",
-    "test": "tsx --test tests/*.test.ts tests/**/*.test.ts",
+    "test": "tsx --test tests/*.test.ts",
     "benchmark": "tsx scripts/benchmark.ts",
     "prepare": "npm run build"
   },

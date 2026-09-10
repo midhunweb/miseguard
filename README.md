@@ -217,13 +217,39 @@ MiSeGuard adds negligible overhead to your agent workflows.
 
 ---
 
-## 🚫 What MiSeGuard Does Not Do
+## 🤖 Which Agents Are Protected?
+
+MiSeGuard operates at the **Model Context Protocol (MCP) stdio layer**. It intercepts every `tools/call` JSON-RPC message that flows between an agent and an MCP tool server (bash, filesystem, git, etc.).
+
+| Agent / Environment | Protected? | Notes |
+|---|:---:|---|
+| **Claude Desktop** | ✅ **Full** | MCP-native (all tools route via stdio) |
+| **Claude Code** | ✅ **Full** | MCP-native |
+| **Cline** | ✅ **Full** | MCP-native |
+| **Roo Code** | ✅ **Full** | MCP-native |
+| **OpenCode** | ✅ **Full** | MCP-native |
+| **LibreChat** | ✅ **Full** | MCP-native |
+| **Cursor (MCP servers)** | ✅ **Yes** | Protects all tools configured under `mcpServers` |
+| **Antigravity (MCP servers)** | ✅ **Yes** | Protects all tools configured under `mcpServers` |
+| **Cursor (native IDE tools)** | ❌ *No* | Bypasses MCP (Roadmap: v0.3.0 IDE Extension) |
+| **Antigravity (native IDE tools)** | ❌ *No* | Bypasses MCP (Roadmap: v0.3.0 IDE Extension) |
+| **Windsurf (native IDE tools)** | ❌ *No* | Bypasses MCP (Roadmap: v0.3.0 IDE Extension) |
+
+---
+
+## ⚠️ Scope & Limitations
 
 Being explicit about architectural boundaries:
-- **Does not protect against prompt injection**: That is an LLM inference layer concern. MiSeGuard acts as the deterministic runtime circuit breaker on the *actions* and *tool invocations*.
-- **Does not maintain long-running persistent VM state**: Shadow sandboxes for dry-runs are ephemeral and discarded after diff analysis.
-- **Does not support HTTP/gRPC transports yet**: Standard input/output (`stdio`) JSON-RPC 2.0 only for v0.1.0 (HTTP on roadmap).
-- **Does not use ML or probabilistic heuristics for risk scoring**: By design. Determinism and reproducibility are core security features.
+- **Does not protect against prompt injection** — That is an LLM inference layer concern. MiSeGuard assumes the agent's intent may be compromised or hallucinatory, and deterministically enforces policy on the *executed action*, not the reasoning.
+- **Does not intercept native IDE built-in tools** — Cursor's internal `run_command`, Antigravity's internal `edit_file`, and Windsurf's native terminal bypass MCP entirely. MiSeGuard only inspects MCP stdio traffic. Direct IDE extension hooks are planned for v0.3.0.
+- **Does not sandbox long-running persistent VM state** — Ephemeral shadow sandboxes for dry-runs are discarded immediately after filesystem diff analysis.
+- **Does not support HTTP/gRPC transports yet** — Standard input/output (`stdio`) JSON-RPC 2.0 only for v0.1.0 (HTTP/SSE transport on roadmap for v0.2.0).
+- **Does not use ML or probabilistic heuristics for risk scoring** — By design. Determinism and reproducibility are core security features.
+- **Does not defend against kernel-level escapes or raw syscall bypasses** — Operates at the tool runtime protocol layer.
+
+### 🗺️ Roadmap
+- **v0.2.0**: HTTP / SSE / gRPC MCP transport support
+- **v0.3.0**: IDE Extension / LSP wrapper for Cursor, Antigravity, and Windsurf native tools
 
 ---
 

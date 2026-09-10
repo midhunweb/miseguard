@@ -43,7 +43,7 @@ export function findMcpConfigFile(cwd: string = process.cwd()): string | null {
       if (file.isFile() && file.name.endsWith('.json') && file.name !== 'package.json' && file.name !== 'package-lock.json' && file.name !== 'tsconfig.json') {
         const fullPath = path.resolve(cwd, file.name);
         try {
-          const content = fs.readFileSync(fullPath, 'utf-8');
+          const content = fs.readFileSync(fullPath, 'utf-8').replace(/^\uFEFF/, '');
           const parsed = JSON.parse(content);
           if (parsed && typeof parsed === 'object' && parsed.mcpServers && typeof parsed.mcpServers === 'object') {
             return fullPath;
@@ -96,7 +96,7 @@ export function wrapMcpConfigFile(targetFilePath?: string, cwd: string = process
   let parsedConfig: any = null;
 
   try {
-    fileContent = fs.readFileSync(resolvedPath, 'utf-8');
+    fileContent = fs.readFileSync(resolvedPath, 'utf-8').replace(/^\uFEFF/, '');
     parsedConfig = JSON.parse(fileContent);
   } catch (err: any) {
     return {

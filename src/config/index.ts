@@ -66,7 +66,7 @@ export function loadConfigSync(cwd: string = process.cwd(), customConfigPath?: s
     const resolvedPath = path.isAbsolute(customConfigPath) ? customConfigPath : path.resolve(cwd, customConfigPath);
     if (fs.existsSync(resolvedPath)) {
       try {
-        const fileContent = fs.readFileSync(resolvedPath, 'utf-8');
+        const fileContent = fs.readFileSync(resolvedPath, 'utf-8').replace(/^\uFEFF/, '');
         const parsed = JSON.parse(fileContent);
         return sanitizeConfig(parsed);
       } catch (err: any) {
@@ -84,7 +84,7 @@ export function loadConfigSync(cwd: string = process.cwd(), customConfigPath?: s
     const candidatePath = path.resolve(cwd, candidate);
     if (fs.existsSync(candidatePath)) {
       try {
-        const fileContent = fs.readFileSync(candidatePath, 'utf-8');
+        const fileContent = fs.readFileSync(candidatePath, 'utf-8').replace(/^\uFEFF/, '');
         const parsed = JSON.parse(fileContent);
         return sanitizeConfig(parsed);
       } catch (err: any) {

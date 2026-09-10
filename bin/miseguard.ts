@@ -81,8 +81,8 @@ program
 // Command: wrap-config
 program
   .command('wrap-config')
-  .description('Safely wrap tools in an existing MCP JSON config file so commands run shielded through MiSeGuard')
-  .argument('[file-path]', 'Path to MCP configuration file (auto-detects if omitted)')
+  .description('Safely wrap tools in an existing MCP config file (e.g. claude_desktop_config.json, .cursor/mcp.json, .antigravity/mcp.json)')
+  .argument('[file-path]', 'Explicit path to MCP configuration file (auto-detects in workspace if omitted)')
   .action((filePath?: string) => {
     Reporter.printHeader();
     const result = wrapMcpConfigFile(filePath);

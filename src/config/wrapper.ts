@@ -87,7 +87,7 @@ export function wrapMcpConfigFile(targetFilePath?: string, cwd: string = process
         wrappedCount: 0,
         wrappedServers: [],
         alreadyShieldedCount: 0,
-        message: 'No MCP configuration file found. Usage: miseguard wrap-config <path/to/config.json>',
+        message: 'No MCP configuration file found in workspace.\n  • To wrap a specific agent config: miseguard wrap-config <path/to/config.json>\n  • To generate a new config snippet: miseguard snippet --tool filesystem',
       };
     }
   }

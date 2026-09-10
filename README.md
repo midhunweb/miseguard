@@ -44,14 +44,30 @@ npm install --save-dev miseguard
 
 ## 🚀 30-Second Quick Start
 
+### 1. Initialize workspace security policy (`miseguard.json`)
 ```bash
-# 1. Initialize workspace security policy (miseguard.json)
 miseguard init
+```
 
-# 2. Automatically wrap and shield your existing MCP config (auto-detects mcp.json, .cursor/mcp.json)
-miseguard wrap-config
+### 2. Shield your MCP agent tools
+Choose the method that matches your workflow:
 
-# 3. Test the deterministic circuit breaker
+- **Starting fresh or configuring an agent GUI?** Use `snippet` to generate copy-pasteable JSON:
+  ```bash
+  miseguard snippet --tool filesystem --path .
+  ```
+- **Already have an existing MCP configuration file?** Use `wrap-config <file-path>` to automatically rewrite and back up your config in place:
+  ```bash
+  # Pass the explicit path to your agent's config file:
+  miseguard wrap-config .antigravity/mcp.json
+  miseguard wrap-config "%APPDATA%\Claude\claude_desktop_config.json"
+  
+  # Or omit path to auto-detect mcp.json / .cursor/mcp.json in current directory:
+  miseguard wrap-config
+  ```
+
+### 3. Test the deterministic circuit breaker
+```bash
 miseguard check "rm -rf /"     # 🛑 Exit Code 1: Blocked
 miseguard check "git status"    # 🟢 Exit Code 0: Safe
 ```
@@ -132,14 +148,21 @@ miseguard init
 ## 🛠️ CLI Reference
 
 ### 1. `miseguard wrap-config [file-path]`
-Auto-discovers and safely transforms tools in existing MCP configuration files (`mcp.json`, `.cursor/mcp.json`, `.antigravity/mcp.json`) behind `miseguard proxy --`:
+Safely transforms tools in an existing MCP configuration file so commands run shielded behind `miseguard proxy --`. Supports explicit file paths or workspace auto-discovery:
+
 ```bash
+# Explicit path (recommended across agents):
+miseguard wrap-config .antigravity/mcp.json
+miseguard wrap-config "%APPDATA%\Claude\claude_desktop_config.json"
+miseguard wrap-config ~/.config/Claude/claude_desktop_config.json
+
+# Workspace auto-detection (scans for mcp.json, .cursor/mcp.json, .antigravity/mcp.json):
 miseguard wrap-config
 ```
 *Creates `<file-path>.bak` before modification and guarantees idempotency.*
 
 ### 2. `miseguard snippet [options]`
-Generates copy-pasteable JSON configuration blocks for agent GUI settings:
+Generates copy-pasteable JSON configuration blocks for agent GUI settings (Cursor, Claude, Antigravity, Windsurf):
 ```bash
 # Filesystem preset (default)
 miseguard snippet --tool filesystem --path ./

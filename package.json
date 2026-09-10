@@ -7,6 +7,11 @@
   "bin": {
     "miseguard": "dist/bin/miseguard.js"
   },
+  "files": [
+    "dist/bin",
+    "dist/src",
+    "schema.json"
+  ],
   "type": "module",
   "scripts": {
     "build": "tsc",
@@ -48,4 +53,5 @@
     "tsx": "^4.19.3",
     "typescript": "^5.8.2"
   }
+  
 }

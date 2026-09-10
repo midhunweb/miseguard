@@ -4,15 +4,29 @@ MiSeGuard works transparently with any tool runner or agent environment that com
 
 ---
 
-## ⚡ Option 1: Automatic Wrapping (`wrap-config`)
+## ⚡ Option 1: Wrapping Existing Configs (`wrap-config`)
 
-If your project already has an MCP configuration file (`mcp.json`, `.cursor/mcp.json`, `.antigravity/mcp.json`), run:
+If your agent already has an MCP configuration file, you can pass the path directly to `miseguard wrap-config`:
 
 ```bash
+# Antigravity
+miseguard wrap-config .antigravity/mcp.json
+
+# Claude Desktop (Windows)
+miseguard wrap-config "%APPDATA%\Claude\claude_desktop_config.json"
+
+# Claude Desktop (macOS)
+miseguard wrap-config ~/Library/Application\ Support/Claude/claude_desktop_config.json
+
+# Cursor / VS Code
+miseguard wrap-config .cursor/mcp.json
+miseguard wrap-config .vscode/mcp.json
+
+# Workspace Auto-Discovery (if mcp.json is in current directory)
 miseguard wrap-config
 ```
 
-This auto-discovers your config, backs it up to `<file>.bak`, and wraps tool commands behind `miseguard proxy --`.
+This creates a timestamped backup (`<file>.bak`), preserves your existing configuration, and transparently wraps server commands behind `miseguard proxy --`.
 
 ---
 

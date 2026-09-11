@@ -4,16 +4,19 @@
 > It is not affiliated with, endorsed by, or representative of any current, past, or future employer.
 > All development was conducted entirely on personal equipment, during personal time, and without the use of proprietary resources or confidential information.
 
-
 # 🛡️ MiSeGuard
 
-**Deterministic Runtime Circuit Breaker and Stdio Proxy for Autonomous AI Coding Agents.**
+**A deterministic safety layer for autonomous coding agents.**
+
+*Runtime circuit breaker and stdio proxy that intercepts MCP tool calls before they reach your OS.*
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.8+-blue.svg)](https://www.typescriptlang.org/)
 [![Node.js](https://img.shields.io/badge/Node.js-%3E%3D18-green.svg)](https://nodejs.org/)
 [![MCP Ready](https://img.shields.io/badge/Model%20Context%20Protocol-Compatible-emerald.svg)](https://modelcontextprotocol.io)
-[![Latency](https://img.shields.io/badge/Proxy%20Overhead-%3C1ms-brightgreen.svg)](#-performance--latency)
+[![Latency](https://img.shields.io/badge/Policy%20Evaluation-%3C1ms-brightgreen.svg)](#-performance--latency)
+
+> **AI coding agents can modify your machine. MiSeGuard puts a deterministic security boundary between the agent and your tools.**
 
 ![MiSeGuard Demo](./docs/assets/demo.gif)
 
@@ -204,7 +207,7 @@ Displays the complete deterministic security rule matrix.
 
 ## ⚡ Performance & Latency
 
-MiSeGuard adds negligible overhead to your agent workflows.
+MiSeGuard adds negligible overhead. The numbers below measure **policy evaluation and interception logic** — the scoring, sandbox dispatch, and diff-checking path. They exclude process spawn, JSON serialization, and OS scheduling, which are common to all stdio proxies and not attributable to MiSeGuard.
 
 | Scenario | Median Latency | Mean Latency | 95th Percentile (p95) |
 |---|---|---|---|
@@ -213,9 +216,7 @@ MiSeGuard adds negligible overhead to your agent workflows.
 | 🔴 **Red Command Block (`rm -rf /`)** | **~0.066 ms** | ~0.083 ms | 0.118 ms |
 | 🟡 **Yellow Caution Scoring (`npm -g`)** | **~0.194 ms** | ~0.280 ms | 0.325 ms |
 
-> 📊 **Summary:** Median overhead is **~0.006 ms (6 microseconds)** for safe operations; worst-case mean is **~0.28 ms** for caution scoring.
->
-> 📖 [Detailed benchmark methodology & distribution →](./docs/BENCHMARKS.md)
+> **Reproducibility:** Full methodology, hardware specs, warm-up procedure, and percentile distributions are in [`docs/BENCHMARKS.md`](./docs/BENCHMARKS.md). Run `npm run benchmark` to reproduce on your own machine.
 
 ---
 
@@ -266,7 +267,7 @@ Being explicit about architectural boundaries:
 ## 🧪 Testing
 
 ```bash
-# Run all 55 unit and integration tests
+# Run all 60 unit and integration tests
 npm test
 
 # Run latency benchmark suite
